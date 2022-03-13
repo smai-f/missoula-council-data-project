@@ -1,0 +1,12 @@
+default_context:
+    municipality: "Missoula"
+    governing_body_type: "city council"
+    municipality_slug: "missoula"
+    python_municipality_slug: "missoula"
+    infrastructure_slug: "missoula-mt-council-data"
+    maintainer_or_org_full_name: "Smai Fullerton"
+    hosting_github_username_or_org: "smai-f"
+    hosting_github_repo_name: "missoula-mt-council-data"
+    hosting_github_url: "https://github.com/smai-f/missoula-council-data-project"
+    hosting_web_app_address: "https://smai-f.github.io/missoula-council-data-project"
+    firestore_region: "us-central"
