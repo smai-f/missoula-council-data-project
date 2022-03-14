@@ -1,0 +1,2 @@
+(this["webpackJsonpcdp-missoula"]=this["webpackJsonpcdp-missoula"]||[]).push([[0],{204:function(i,s){},90:function(i,s,e){"use strict";e.r(s);e(0);var n=e(27),o=e.n(n),t=e(63),c=(e(218),e(54));o.a.render(Object(c.jsx)("div",{children:Object(c.jsx)(t.AppConfigProvider,{appConfig:{firebaseConfig:{options:{projectId:"missoula-mt-council-data"},settings:{}},municipality:{name:"Missoula",footerLinksSections:[]}},children:Object(c.jsx)(t.App,{})})}),document.getElementById("root"))}},[[90,1,2]]]);
+//# sourceMappingURL=main.ddcaf5e2.chunk.js.map
