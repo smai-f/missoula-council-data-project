@@ -4,8 +4,7 @@
 from datetime import datetime
 from typing import List
 
-from cdp_backend.pipeline.ingestion_models import EventIngestionModel
-
+from cdp_backend.pipeline import ingestion_models
 ###############################################################################
 
 
@@ -13,7 +12,7 @@ def get_events(
     from_dt: datetime,
     to_dt: datetime,
     **kwargs,
-) -> List[EventIngestionModel]:
+) -> List[ingestion_models.EventIngestionModel]:
     """
     Get all events for the provided timespan.
 
@@ -53,4 +52,16 @@ def get_events(
     # On new page, grab the div id=isi_player's data-file_name (Encoder1_AF_2022-03-02-02-03.mp4)
     # The video link is https://video.isilive.ca/missoula/ + value from previous step
 
-    return []
+
+    hardcoded_mtg = ingestion_models.EventIngestionModel(
+        body=ingestion_models.Body(name="Affordable Housing Resident Oversight Committee"),
+        sessions=[
+            ingestion_models.Session(
+                video_uri="https://video.isilive.ca/missoula/Encoder1_AHROC_2022-03-09-07-51.mp4",
+                session_datetime=datetime(2022, 3, 9, 18),
+                session_index=0,
+            ),
+        ],
+    )
+
+    return [hardcoded_mtg]
