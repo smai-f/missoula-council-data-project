@@ -1,10 +1,14 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from datetime import datetime
-from typing import List
+import time
 
+from bs4 import BeautifulSoup
 from cdp_backend.pipeline import ingestion_models
+from datetime import datetime
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from typing import List
 
 ###############################################################################
 
@@ -54,7 +58,29 @@ def get_events(
     # (Encoder1_AF_2022-03-02-02-03.mp4)
     # The video link is https://video.isilive.ca/missoula/ + value from previous step
 
+    options = webdriver.ChromeOptions()
+    options.add_argument("--ignore-certificate-errors")
+    options.add_argument("--incognito")
+    options.add_argument("--headless")
+    driver = webdriver.Chrome("./chromedriver", options=options)
+
+    msla_url = "https://pub-missoula.escribemeetings.com/?Year=2022"
+    driver.get(msla_url)
+
+    # expands the list view to include past meetings
+    list_button = driver.find_element(
+        by=By.CLASS_NAME, value="fc-mergedListViewButton-button"
+    )
+    driver.execute_script("arguments[0].click();", list_button)
+    time.sleep(3)
+
+    soup = BeautifulSoup(driver.page_source, "html.parser")
+
+    # need to expand all the lil accordian thingies to get all meeting titles returned here
+    meeting_divs = soup.find_all("div", attrs={"class": "meeting-title"})
+
     video_prefix = "https://video.isilive.ca/missoula/"
+
     hardcoded_mtg = ingestion_models.EventIngestionModel(
         body=ingestion_models.Body(
             name="Affordable Housing Resident Oversight Committee"

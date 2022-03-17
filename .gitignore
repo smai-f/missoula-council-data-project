@@ -109,3 +109,6 @@ ENV/
 
 # Secrets
 .keys/
+
+# Backend env
+python/cdp_missoula_backend/environment
