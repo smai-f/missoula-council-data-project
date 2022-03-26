@@ -79,8 +79,7 @@ def get_scraped_data() -> List:
                     )
                     # TODO: Convert to datetime
                     _meeting_data["date"] = date.text
-                    meetings_info.append(_meeting_data)
-
+                    
                     try:
                         video = meeting.find_element(
                             by=By.XPATH,
@@ -90,6 +89,8 @@ def get_scraped_data() -> List:
                         pass
                     else:
                         _meeting_data["video_player_uri"] = video.get_attribute("href")
+
+                    meetings_info.append(_meeting_data)
 
     # navigate to each video player and construct the direct .mp4 uri
     for info in meetings_info:
