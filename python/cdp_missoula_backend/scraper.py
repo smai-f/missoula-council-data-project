@@ -3,10 +3,10 @@
 
 import time
 
-from bs4 import BeautifulSoup
 from cdp_backend.pipeline import ingestion_models
 from datetime import datetime
 from selenium import webdriver
+from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
@@ -30,15 +30,15 @@ def get_scraped_data() -> List:
     list_button = driver.find_element(
         by=By.CLASS_NAME, value="fc-mergedListViewButton-button"
     )
-    driver.execute_script("arguments[0].click();", list_button)
+    list_button.click()
     # TODO: Update to wait for the relevant element to be displayed instead
     time.sleep(3)
 
     # common ancestor of the anchor that expands the meeting type to display all the meetings,
     # and the meeting-headers themselves
     meeting_type_ancestors = driver.find_elements(
-                               by=By.XPATH, value="//div[@class='MeetingTypeList']"
-                             )
+        by=By.XPATH, value="//div[@class='MeetingTypeList']"
+    )
 
     meetings_info = []
     for meeting_type_ancestor in meeting_type_ancestors:
@@ -49,12 +49,17 @@ def get_scraped_data() -> List:
             anchor = meeting_type_ancestor.find_element(
                 by=By.XPATH, value=".//a[contains(@class, 'PastMeetingTypesName')]"
             )
-            driver.execute_script("arguments[0].click();", anchor)
+            anchor.click()
 
             # wait until the meeting-headers are visible
             ancestor_id = meeting_type_ancestor.get_attribute("id")
             WebDriverWait(driver, 10).until(
-                EC.visibility_of_element_located((By.XPATH, f"//div[@id='{ancestor_id}']//div[@class='meeting-header']"))
+                EC.visibility_of_element_located(
+                    (
+                        By.XPATH,
+                        f"//div[@id='{ancestor_id}']//div[@class='meeting-header']",
+                    )
+                )
             )
 
             # get all the info we're interested from from each meeting header
@@ -72,9 +77,29 @@ def get_scraped_data() -> List:
                     date = meeting.find_element(
                         by=By.XPATH, value=".//div[@class='meeting-date']"
                     )
+                    # TODO: Convert to datetime
                     _meeting_data["date"] = date.text
                     meetings_info.append(_meeting_data)
-                
+
+                    try:
+                        video = meeting.find_element(
+                            by=By.XPATH,
+                            value=".//li[@class='resource-link']//a[contains(@href, '/Players/ISIStandAlonePlayer.aspx?')]",
+                        )
+                    except NoSuchElementException:
+                        pass
+                    else:
+                        _meeting_data["video_player_uri"] = video.get_attribute("href")
+
+    # navigate to each video player and construct the direct .mp4 uri
+    for info in meetings_info:
+        if "video_player_uri" in info:
+            driver.get(info["video_player_uri"])
+            player = driver.find_element(by=By.XPATH, value="//div[@id='isi_player']")
+            file_name = player.get_attribute("data-file_name")
+            info["video_uri"] = "https://video.isilive.ca/missoula/" + file_name
+            info.pop("video_player_uri")
+
     return [len(meetings_info), meetings_info]
 
 
@@ -105,33 +130,13 @@ def get_events(
     from GitHub Actions UI.
     """
 
-    # Go to https://pub-missoula.escribemeetings.com/?Year=2022
-    # within div class=past-meetings -> calendar-item
-
-    # COMMITTEE NAME
-
-    # meeting-title -> <a> child text ("City Council Meeting")
-
-    # MEETING DATE
-
-    # meeting-date child text ("Monday, 14 March 2022 @ 6:00 PM")
-
-    # VIDEO FILE
-
-    # Click on every single <a href=./Players/ISIStandAlonePlayer.aspx?*
-    # On new page, grab the div id=isi_player's data-file_name
-    # (Encoder1_AF_2022-03-02-02-03.mp4)
-    # The video link is https://video.isilive.ca/missoula/ + value from previous step
-
-    video_prefix = "https://video.isilive.ca/missoula/"
-
     hardcoded_mtg = ingestion_models.EventIngestionModel(
         body=ingestion_models.Body(
             name="Affordable Housing Resident Oversight Committee"
         ),
         sessions=[
             ingestion_models.Session(
-                video_uri=video_prefix + "Encoder1_AHROC_2022-03-09-07-51.mp4",
+                video_uri="https://video.isilive.ca/missoula/Encoder1_AHROC_2022-03-09-07-51.mp4",
                 session_datetime=datetime(2022, 3, 9, 18),
                 session_index=0,
             ),
