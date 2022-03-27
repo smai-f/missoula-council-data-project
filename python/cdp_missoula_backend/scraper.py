@@ -1,27 +1,46 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import functools
 import time
 
 from cdp_backend.pipeline import ingestion_models
+from datetime import date
 from datetime import datetime
+from datetime import timedelta
 from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
+from sys import platform
 from typing import List
 
 ###############################################################################
 
+
+def get_chromedriver_path():
+    chromedriver_path = ""
+    # Chrome Driver v99 - there is a known issue with Chrome v98 and Selenium's is_displayed()
+    if platform == "linux" or platform == "linux2":
+        chromedriver_path = "./chromedriver_99_linux"
+    elif platform == "darwin":
+        chromedriver_path = "./chromedriver_99_osx"
+    else:
+        raise Exception(f"No Chrome Driver available for operating system {platform}")
+    return chromedriver_path
+
+
 # TODO: Handle the sad paths
-def get_scraped_data() -> List:
+def get_scraped_data(
+    from_dt: datetime = datetime(2022, 1, 1), to_dt: datetime = datetime.today()
+) -> List:
     options = webdriver.ChromeOptions()
     options.add_argument("--ignore-certificate-errors")
     options.add_argument("--incognito")
     options.add_argument("--headless")
-    # Chrome Driver v99 - there is a known issue with Chrome v98 and Selenium's is_displayed()
-    driver = webdriver.Chrome("./chromedriver", options=options)
+
+    driver = webdriver.Chrome(get_chromedriver_path(), options=options)
 
     msla_url = "https://pub-missoula.escribemeetings.com/"
     driver.get(msla_url)
@@ -69,26 +88,34 @@ def get_scraped_data() -> List:
             for meeting in meetings:
                 if meeting.is_displayed():
                     _meeting_data = {}
-                    title = meeting.find_element(
-                        by=By.XPATH, value=".//div[@class='meeting-title']"
-                    )
-                    _meeting_data["title"] = title.text
 
-                    date = meeting.find_element(
+                    meeting_date = meeting.find_element(
                         by=By.XPATH, value=".//div[@class='meeting-date']"
                     )
-                    # TODO: Convert to datetime
-                    _meeting_data["date"] = date.text
-                    
+                    # Thursday, 3 February 2022 @ 10:00 AM
+                    converted_dt = datetime.strptime(
+                        meeting_date.text, "%A, %d %B %Y @ %I:%M %p"
+                    )
+                    if from_dt <= converted_dt <= to_dt:
+                        _meeting_data["date"] = converted_dt
+                    else:
+                        continue
+
                     try:
                         video = meeting.find_element(
                             by=By.XPATH,
                             value=".//li[@class='resource-link']//a[contains(@href, '/Players/ISIStandAlonePlayer.aspx?')]",
                         )
                     except NoSuchElementException:
-                        pass
+                        # if there is no video for the meeting, don't include it for rendering
+                        continue
                     else:
                         _meeting_data["video_player_uri"] = video.get_attribute("href")
+
+                    title = meeting.find_element(
+                        by=By.XPATH, value=".//div[@class='meeting-title']"
+                    )
+                    _meeting_data["title"] = title.text
 
                     meetings_info.append(_meeting_data)
 
@@ -96,10 +123,59 @@ def get_scraped_data() -> List:
     for info in meetings_info:
         if "video_player_uri" in info:
             driver.get(info["video_player_uri"])
+            # TODO: Make duration calculation optional and have this look for isi_player instead
+            try:
+                WebDriverWait(driver, 10).until(
+                    EC.visibility_of_element_located(
+                        (
+                            By.XPATH,
+                            "//span[@class='fp-duration']",
+                        )
+                    )
+                )
+            except:
+                # it's likely this video is corrupt, but give peace a chance to see if
+                # the file_name is present
+                pass
+
             player = driver.find_element(by=By.XPATH, value="//div[@id='isi_player']")
             file_name = player.get_attribute("data-file_name")
+            if file_name.count(".mp4") == 0:
+                print(f"Erroring out on file_name {file_name}")
+                print(info)
+                info["error"] = True
+                continue
             info["video_uri"] = "https://video.isilive.ca/missoula/" + file_name
+
+            try:
+                duration = driver.find_element(
+                    by=By.XPATH, value="//span[@class='fp-duration']"
+                ).text
+            except:
+                continue
+
+            if duration.count(":") == 1:
+                duration = "00:" + duration
+            (h, m, s) = duration.split(":")
+            info["video_duration"] = timedelta(
+                hours=int(h), minutes=int(m), seconds=int(s)
+            )
             info.pop("video_player_uri")
+
+    durations = []
+    for info in meetings_info:
+        if "video_duration" in info:
+            durations.append(info["video_duration"])
+    total_meeting_time = functools.reduce(lambda a, b: a + b, durations)
+    print("TOTAL MEETING TIME")
+    print(total_meeting_time)
+    avg_meeting_time_per_week = total_meeting_time / date.today().isocalendar()[1]
+    print("AVERAGE MEETING TIME PER WEEK")
+    print(avg_meeting_time_per_week)
+
+    for i in range(len(meetings_info)):
+        if meetings_info[i]["error"] == True:
+            del meetings_info[i]
 
     return [len(meetings_info), meetings_info]
 
