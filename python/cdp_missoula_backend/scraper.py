@@ -36,5 +36,36 @@ def get_events(
     from GitHub Actions UI.
     """
 
-    # Your implementation here
-    return []
+    # Go to https://pub-missoula.escribemeetings.com/?Year=2022
+    # within div class=past-meetings -> calendar-item
+
+    # COMMITTEE NAME
+
+    # meeting-title -> <a> child text ("City Council Meeting")
+
+    # MEETING DATE
+
+    # meeting-date child text ("Monday, 14 March 2022 @ 6:00 PM")
+
+    # VIDEO FILE
+
+    # Click on every single <a href=./Players/ISIStandAlonePlayer.aspx?*
+    # On new page, grab the div id=isi_player's data-file_name
+    # (Encoder1_AF_2022-03-02-02-03.mp4)
+    # The video link is https://video.isilive.ca/missoula/ + value from previous step
+
+    video_prefix = "https://video.isilive.ca/missoula/"
+    hardcoded_mtg = ingestion_models.EventIngestionModel(
+        body=ingestion_models.Body(
+            name="Affordable Housing Resident Oversight Committee"
+        ),
+        sessions=[
+            ingestion_models.Session(
+                video_uri=video_prefix + "Encoder1_AHROC_2022-03-09-07-51.mp4",
+                session_datetime=datetime(2022, 3, 9, 18),
+                session_index=0,
+            ),
+        ],
+    )
+
+    return [hardcoded_mtg]
