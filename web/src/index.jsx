@@ -7,7 +7,7 @@ import "@councildataproject/cdp-frontend/dist/index.css";
 const config = {
     firebaseConfig: {
         options: {
-            projectId: "missoula-mt-council-data",
+            projectId: "missoula-council-data-proj",
         },
         settings: {},
     },

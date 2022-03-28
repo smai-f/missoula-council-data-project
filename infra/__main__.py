@@ -7,7 +7,7 @@ from pulumi import export
 ###############################################################################
 
 cdp_stack = CDPStack(
-    gcp_project_id="missoula-mt-council-data",
+    gcp_project_id="missoula-council-data-proj",
     municipality_name="Missoula",
     firestore_location="us-central",
     hosting_github_url="https://github.com/smai-f/missoula-council-data-project",
