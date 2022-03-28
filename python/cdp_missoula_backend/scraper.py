@@ -173,9 +173,7 @@ def get_scraped_data(
     print("AVERAGE MEETING TIME PER WEEK")
     print(avg_meeting_time_per_week)
 
-    for i in range(len(meetings_info)):
-        if meetings_info[i]["error"] == True:
-            del meetings_info[i]
+    meetings_info[:] = [meeting for meeting in meetings_info if not "error" in meeting]
 
     return [len(meetings_info), meetings_info]
 
@@ -206,6 +204,22 @@ def get_events(
     and to_dt parameters. However, they are useful for manually kicking off pipelines
     from GitHub Actions UI.
     """
+
+    def create_ingestion_model(e):
+        ingestion_models.EventIngestionModel(
+            body=ingestion_models.Body(
+                name=e.title
+            ),
+            sessions=[
+                ingestion_models.Session(
+                    video_uri=e.video_uri,
+                    session_datetime=e.date,
+                    session_index=0,
+                ),
+            ],
+        )
+    
+    events = map(create_ingestion_model, get_scraped_data())
 
     hardcoded_mtg = ingestion_models.EventIngestionModel(
         body=ingestion_models.Body(
