@@ -31,9 +31,117 @@ def get_chromedriver_path():
     return chromedriver_path
 
 
-# TODO: Handle the sad paths
+def append_meeting_data(meeting, meetings_info, from_dt, to_dt):
+    _meeting_data = {}
+
+    meeting_date = meeting.find_element(
+        by=By.XPATH, value=".//div[@class='meeting-date']"
+    )
+    # Thursday, 3 February 2022 @ 10:00 AM
+    converted_dt = datetime.strptime(
+        meeting_date.text, "%A, %d %B %Y @ %I:%M %p"
+    )
+    if from_dt <= converted_dt <= to_dt:
+        _meeting_data["date"] = converted_dt
+    else:
+        return
+
+    try:
+        video = meeting.find_element(
+            by=By.XPATH,
+            value=".//li[@class='resource-link']//a[contains(@href, '/Players/ISIStandAlonePlayer.aspx?')]",
+        )
+    except:
+        return
+    else:
+        _meeting_data["video_player_uri"] = video.get_attribute("href")
+
+    title = meeting.find_element(
+        by=By.XPATH, value=".//div[@class='meeting-title']"
+    )
+    _meeting_data["title"] = title.text
+
+    meetings_info.append(_meeting_data)
+
+
+def append_video_duration(driver, info):
+    try:
+        duration = driver.find_element(
+            by=By.XPATH, value="//span[@class='fp-duration']"
+        ).text
+    except:
+        print("Duration not found")
+        print(info)
+        return
+
+    if duration.count(":") == 1:
+        duration = "00:" + duration
+    (h, m, s) = duration.split(":")
+    info["video_duration"] = timedelta(
+        hours=int(h), minutes=int(m), seconds=int(s)
+    )
+
+
+def append_video_uri(driver, info):
+    if "video_player_uri" in info:
+        driver.get(info["video_player_uri"])
+        try:
+            WebDriverWait(driver, 10).until(
+                EC.visibility_of_element_located(
+                    (
+                        By.XPATH,
+                        "//div[@id='isi_player']",
+                    )
+                )
+            )
+        except:
+            print("Video player not found after 10 seconds")
+            print(info)
+            info["error"] = True
+            return
+
+        player = driver.find_element(by=By.XPATH, value="//div[@id='isi_player']")
+        file_name = player.get_attribute("data-file_name")
+        if file_name.count(".mp4") == 0:
+            print(f"File name does not contain .mp4: {file_name}")
+            print(info)
+            info["error"] = True
+            return
+        info["video_uri"] = "https://video.isilive.ca/missoula/" + file_name
+        info.pop("video_player_uri")
+
+
+def expand_meeting_group(driver, meeting_group_ancestor):
+    # expand this meeting type to render meetings
+    anchor = meeting_group_ancestor.find_element(
+        by=By.XPATH, value=".//a[contains(@class, 'PastMeetingTypesName')]"
+    )
+    anchor.click()
+
+    # wait until the meeting-headers are visible
+    ancestor_id = meeting_group_ancestor.get_attribute("id")
+    WebDriverWait(driver, 10).until(
+        EC.visibility_of_element_located(
+            (
+                By.XPATH,
+                f"//div[@id='{ancestor_id}']//div[@class='meeting-header']",
+            )
+        )
+    )
+
+
+def expand_past_meetings(driver):
+    # expand the page's list view to render past meetings
+    list_button = driver.find_element(
+        by=By.CLASS_NAME, value="fc-mergedListViewButton-button"
+    )
+    list_button.click()
+    # TODO: Update to wait for the relevant element to be displayed instead
+    time.sleep(3)
+
+
 def get_scraped_data(
-    from_dt: datetime = datetime(2022, 1, 1), to_dt: datetime = datetime.today()
+    from_dt: datetime = datetime(2022, 1, 1), to_dt: datetime = datetime.today(), include_durations = False
 ) -> List:
     options = webdriver.ChromeOptions()
     options.add_argument("--ignore-certificate-errors")
@@ -44,134 +152,37 @@ def get_scraped_data(
 
     msla_url = "https://pub-missoula.escribemeetings.com/"
     driver.get(msla_url)
-
-    # expand the page's list view to render past meetings
-    list_button = driver.find_element(
-        by=By.CLASS_NAME, value="fc-mergedListViewButton-button"
-    )
-    list_button.click()
-    # TODO: Update to wait for the relevant element to be displayed instead
-    time.sleep(3)
+    expand_past_meetings(driver)
 
     # common ancestor of the anchor that expands the meeting type to display all the meetings,
     # and the meeting-headers themselves
-    meeting_type_ancestors = driver.find_elements(
+    meeting_group_ancestors = driver.find_elements(
         by=By.XPATH, value="//div[@class='MeetingTypeList']"
     )
 
-    meetings_info = []
-    for meeting_type_ancestor in meeting_type_ancestors:
+    # array of dictionaries, one per video, mutated directly along the way
+    meetings_info: List = []
+    for meeting_group_ancestor in meeting_group_ancestors:
         # WARNING: this is very necessary and important - ALL years of meetings are rendered but
         # the committee titles are hidden, this would be a very expensive line of code to delete
-        if meeting_type_ancestor.is_displayed():
-            # expand this meeting type to render meetings
-            anchor = meeting_type_ancestor.find_element(
-                by=By.XPATH, value=".//a[contains(@class, 'PastMeetingTypesName')]"
-            )
-            anchor.click()
+        if meeting_group_ancestor.is_displayed():
+            expand_meeting_group(driver, meeting_group_ancestor)
 
-            # wait until the meeting-headers are visible
-            ancestor_id = meeting_type_ancestor.get_attribute("id")
-            WebDriverWait(driver, 10).until(
-                EC.visibility_of_element_located(
-                    (
-                        By.XPATH,
-                        f"//div[@id='{ancestor_id}']//div[@class='meeting-header']",
-                    )
-                )
-            )
-
-            # get all the info we're interested from from each meeting header
-            meetings = meeting_type_ancestor.find_elements(
+            meetings = meeting_group_ancestor.find_elements(
                 by=By.XPATH, value=".//div[@class='meeting-header']"
             )
             for meeting in meetings:
                 if meeting.is_displayed():
-                    _meeting_data = {}
-
-                    meeting_date = meeting.find_element(
-                        by=By.XPATH, value=".//div[@class='meeting-date']"
-                    )
-                    # Thursday, 3 February 2022 @ 10:00 AM
-                    converted_dt = datetime.strptime(
-                        meeting_date.text, "%A, %d %B %Y @ %I:%M %p"
-                    )
-                    if from_dt <= converted_dt <= to_dt:
-                        _meeting_data["date"] = converted_dt
-                    else:
-                        continue
-
-                    try:
-                        video = meeting.find_element(
-                            by=By.XPATH,
-                            value=".//li[@class='resource-link']//a[contains(@href, '/Players/ISIStandAlonePlayer.aspx?')]",
-                        )
-                    except NoSuchElementException:
-                        # if there is no video for the meeting, don't include it for rendering
-                        continue
-                    else:
-                        _meeting_data["video_player_uri"] = video.get_attribute("href")
-
-                    title = meeting.find_element(
-                        by=By.XPATH, value=".//div[@class='meeting-title']"
-                    )
-                    _meeting_data["title"] = title.text
-
-                    meetings_info.append(_meeting_data)
+                    append_meeting_data(meeting, meetings_info, from_dt, to_dt)
 
     # navigate to each video player and construct the direct .mp4 uri
     for info in meetings_info:
-        if "video_player_uri" in info:
-            driver.get(info["video_player_uri"])
-            # TODO: Make duration calculation optional and have this look for isi_player instead
-            try:
-                WebDriverWait(driver, 10).until(
-                    EC.visibility_of_element_located(
-                        (
-                            By.XPATH,
-                            "//span[@class='fp-duration']",
-                        )
-                    )
-                )
-            except:
-                # it's likely this video is corrupt, but give peace a chance to see if
-                # the file_name is present
-                pass
+        append_video_uri(driver, info)
+        if include_durations:
+           append_video_duration(driver, info)
 
-            player = driver.find_element(by=By.XPATH, value="//div[@id='isi_player']")
-            file_name = player.get_attribute("data-file_name")
-            if file_name.count(".mp4") == 0:
-                print(f"Erroring out on file_name {file_name}")
-                print(info)
-                info["error"] = True
-                continue
-            info["video_uri"] = "https://video.isilive.ca/missoula/" + file_name
-
-            try:
-                duration = driver.find_element(
-                    by=By.XPATH, value="//span[@class='fp-duration']"
-                ).text
-            except:
-                continue
-
-            if duration.count(":") == 1:
-                duration = "00:" + duration
-            (h, m, s) = duration.split(":")
-            info["video_duration"] = timedelta(
-                hours=int(h), minutes=int(m), seconds=int(s)
-            )
-            info.pop("video_player_uri")
-
-    durations = []
-    for info in meetings_info:
-        if "video_duration" in info:
-            durations.append(info["video_duration"])
-    total_meeting_time = functools.reduce(lambda a, b: a + b, durations)
-    print("TOTAL MEETING TIME")
-    print(total_meeting_time)
-    avg_meeting_time_per_week = total_meeting_time / date.today().isocalendar()[1]
-    print("AVERAGE MEETING TIME PER WEEK")
-    print(avg_meeting_time_per_week)
+    if include_durations:
+        print_duration_info(meetings_info)
 
     meetings_info[:] = [meeting for meeting in meetings_info if not "error" in meeting]
 
@@ -219,7 +230,7 @@ def get_events(
             ],
         )
     
-    events = map(create_ingestion_model, get_scraped_data())
+    events = map(create_ingestion_model, get_scraped_data(from_dt, to_dt))
 
     hardcoded_mtg = ingestion_models.EventIngestionModel(
         body=ingestion_models.Body(
@@ -235,3 +246,16 @@ def get_events(
     )
 
     return [hardcoded_mtg]
+
+
+def print_duration_info(meetings_info):
+    durations = []
+    for info in meetings_info:
+        if "video_duration" in info:
+            durations.append(info["video_duration"])
+    total_meeting_time = functools.reduce(lambda a, b: a + b, durations)
+    print("TOTAL MEETING TIME")
+    print(total_meeting_time)
+    avg_meeting_time_per_week = total_meeting_time / date.today().isocalendar()[1]
+    print("AVERAGE MEETING TIME PER WEEK")
+    print(avg_meeting_time_per_week)
