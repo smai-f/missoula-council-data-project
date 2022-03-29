@@ -23,7 +23,8 @@ from cdp_backend.pipeline.ingestion_models import Session
 
 def get_chromedriver_path():
     chromedriver_path = ""
-    # Chrome Driver v99 - there is a known issue with Chrome v98 and Selenium's is_displayed()
+    # Chrome Driver v99 - there is a known issue with Chrome v98 and
+    # Selenium's is_displayed()
     if platform == "linux" or platform == "linux2":
         chromedriver_path = "./chromedriver_99_linux"
     elif platform == "darwin":
@@ -49,9 +50,10 @@ def append_meeting_data(meeting, meetings_info, from_dt, to_dt):
     try:
         video = meeting.find_element(
             by=By.XPATH,
-            value=".//li[@class='resource-link']//a[contains(@href, '/Players/ISIStandAlonePlayer.aspx?')]",
+            value=".//li[@class='resource-link']//a[contains(@href,"
+            "'/Players/ISIStandAlonePlayer.aspx?')]",
         )
-    except:
+    except Exception:
         return
     else:
         _meeting_data["video_player_uri"] = video.get_attribute("href")
@@ -67,7 +69,7 @@ def append_video_duration(driver, info):
         duration = driver.find_element(
             by=By.XPATH, value="//span[@class='fp-duration']"
         ).text
-    except:
+    except Exception:
         print("Duration not found")
         print(info)
         return
@@ -90,7 +92,7 @@ def append_video_uri(driver, info):
                     )
                 )
             )
-        except:
+        except Exception:
             print("Video player not found after 10 seconds")
             print(info)
             info["error"] = True
@@ -152,8 +154,8 @@ def get_scraped_data(
     driver.get(msla_url)
     expand_past_meetings(driver)
 
-    # common ancestor of the anchor that expands the meeting type to display all the meetings,
-    # and the meeting-headers themselves
+    # common ancestor of the anchor that expands the meeting type to display all the
+    # meetings, and the meeting-headers themselves
     meeting_group_ancestors = driver.find_elements(
         by=By.XPATH, value="//div[@class='MeetingTypeList']"
     )
@@ -161,8 +163,9 @@ def get_scraped_data(
     # array of dictionaries, one per video, mutated directly along the way
     meetings_info: List = []
     for meeting_group_ancestor in meeting_group_ancestors:
-        # WARNING: this is very necessary and important - ALL years of meetings are rendered but
-        # the committee titles are hidden, this would be a very expensive line of code to delete
+        # WARNING: this is very necessary and important - ALL years of meetings are
+        # rendered but the committee titles are hidden, this would be a very expensive
+        # line of code to delete
         if meeting_group_ancestor.is_displayed():
             expand_meeting_group(driver, meeting_group_ancestor)
 
@@ -182,10 +185,13 @@ def get_scraped_data(
     if include_durations:
         print_duration_info(meetings_info)
 
-    meetings_info[:] = [meeting for meeting in meetings_info if not "error" in meeting]
+    meetings_info[:] = [meeting for meeting in meetings_info if "error" not in meeting]
 
     if len(meetings_info) > 2000:
-        raise Exception("Something has gone wrong. Way more many meetings than expected processed.")
+        raise Exception(
+            "Something has gone wrong. Way more many meetings than expected "
+            "processed."
+        )
 
     return meetings_info
 
@@ -239,7 +245,8 @@ def get_events(
         body=Body(name="Affordable Housing Resident Oversight Committee"),
         sessions=[
             Session(
-                video_uri="https://video.isilive.ca/missoula/Encoder1_AHROC_2022-03-09-07-51.mp4",
+                video_uri="https://video.isilive.ca/missoula/Encoder1_AHROC_2022"
+                "-03-09-07-51.mp4",
                 session_datetime=datetime(2022, 3, 9, 18),
                 session_index=0,
             ),
