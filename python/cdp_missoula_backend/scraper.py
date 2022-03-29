@@ -228,19 +228,7 @@ def get_events(
     print(events)
     print(len(events))
 
-    hardcoded_mtg = EventIngestionModel(
-        body=Body(name="Affordable Housing Resident Oversight Committee"),
-        sessions=[
-            Session(
-                video_uri="https://video.isilive.ca/missoula/Encoder1_AHROC_2022"
-                "-03-09-07-51.mp4",
-                session_datetime=datetime(2022, 3, 9, 18),
-                session_index=0,
-            ),
-        ],
-    )
-
-    return [hardcoded_mtg]
+    return events
 
 
 def print_duration_info(meetings_info):
