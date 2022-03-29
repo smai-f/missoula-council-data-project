@@ -4,7 +4,6 @@
 import functools
 import time
 
-from cdp_backend.pipeline import ingestion_models
 from datetime import date
 from datetime import datetime
 from datetime import timedelta
@@ -15,6 +14,10 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 from sys import platform
 from typing import List
+
+from cdp_backend.pipeline.ingestion_models import Body
+from cdp_backend.pipeline.ingestion_models import EventIngestionModel
+from cdp_backend.pipeline.ingestion_models import Session
 
 ###############################################################################
 
@@ -38,9 +41,7 @@ def append_meeting_data(meeting, meetings_info, from_dt, to_dt):
         by=By.XPATH, value=".//div[@class='meeting-date']"
     )
     # Thursday, 3 February 2022 @ 10:00 AM
-    converted_dt = datetime.strptime(
-        meeting_date.text, "%A, %d %B %Y @ %I:%M %p"
-    )
+    converted_dt = datetime.strptime(meeting_date.text, "%A, %d %B %Y @ %I:%M %p")
     if from_dt <= converted_dt <= to_dt:
         _meeting_data["date"] = converted_dt
     else:
@@ -56,9 +57,7 @@ def append_meeting_data(meeting, meetings_info, from_dt, to_dt):
     else:
         _meeting_data["video_player_uri"] = video.get_attribute("href")
 
-    title = meeting.find_element(
-        by=By.XPATH, value=".//div[@class='meeting-title']"
-    )
+    title = meeting.find_element(by=By.XPATH, value=".//div[@class='meeting-title']")
     _meeting_data["title"] = title.text
 
     meetings_info.append(_meeting_data)
@@ -77,9 +76,7 @@ def append_video_duration(driver, info):
     if duration.count(":") == 1:
         duration = "00:" + duration
     (h, m, s) = duration.split(":")
-    info["video_duration"] = timedelta(
-        hours=int(h), minutes=int(m), seconds=int(s)
-    )
+    info["video_duration"] = timedelta(hours=int(h), minutes=int(m), seconds=int(s))
 
 
 def append_video_uri(driver, info):
@@ -141,7 +138,9 @@ def expand_past_meetings(driver):
 
 
 def get_scraped_data(
-    from_dt: datetime = datetime(2022, 1, 1), to_dt: datetime = datetime.today(), include_durations = False
+    from_dt: datetime = datetime(2022, 1, 1),
+    to_dt: datetime = datetime.today(),
+    include_durations=False,
 ) -> List:
     options = webdriver.ChromeOptions()
     options.add_argument("--ignore-certificate-errors")
@@ -179,7 +178,7 @@ def get_scraped_data(
     for info in meetings_info:
         append_video_uri(driver, info)
         if include_durations:
-           append_video_duration(driver, info)
+            append_video_duration(driver, info)
 
     if include_durations:
         print_duration_info(meetings_info)
@@ -193,7 +192,7 @@ def get_events(
     from_dt: datetime,
     to_dt: datetime,
     **kwargs,
-) -> List[ingestion_models.EventIngestionModel]:
+) -> List[EventIngestionModel]:
     """
     Get all events for the provided timespan.
 
@@ -217,27 +216,23 @@ def get_events(
     """
 
     def create_ingestion_model(e):
-        ingestion_models.EventIngestionModel(
-            body=ingestion_models.Body(
-                name=e.title
-            ),
+        EventIngestionModel(
+            body=Body(name=e.title),
             sessions=[
-                ingestion_models.Session(
+                Session(
                     video_uri=e.video_uri,
                     session_datetime=e.date,
                     session_index=0,
                 ),
             ],
         )
-    
+
     events = map(create_ingestion_model, get_scraped_data(from_dt, to_dt))
 
-    hardcoded_mtg = ingestion_models.EventIngestionModel(
-        body=ingestion_models.Body(
-            name="Affordable Housing Resident Oversight Committee"
-        ),
+    hardcoded_mtg = EventIngestionModel(
+        body=Body(name="Affordable Housing Resident Oversight Committee"),
         sessions=[
-            ingestion_models.Session(
+            Session(
                 video_uri="https://video.isilive.ca/missoula/Encoder1_AHROC_2022-03-09-07-51.mp4",
                 session_datetime=datetime(2022, 3, 9, 18),
                 session_index=0,
