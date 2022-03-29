@@ -18,6 +18,7 @@ dev_requirements = [
 
 requirements = [
     "cdp-backend[pipeline]==3.0.11",
+    "selenium"
 ]
 
 extra_requirements = {
