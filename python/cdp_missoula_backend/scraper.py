@@ -4,7 +4,9 @@
 from datetime import datetime
 from typing import List
 
+from cdp_backend.pipeline.ingestion_models import Body 
 from cdp_backend.pipeline.ingestion_models import EventIngestionModel
+from cdp_backend.pipeline.ingestion_models import Session 
 
 ###############################################################################
 
@@ -55,12 +57,12 @@ def get_events(
     # The video link is https://video.isilive.ca/missoula/ + value from previous step
 
     video_prefix = "https://video.isilive.ca/missoula/"
-    hardcoded_mtg = ingestion_models.EventIngestionModel(
-        body=ingestion_models.Body(
+    hardcoded_mtg = EventIngestionModel(
+        body=Body(
             name="Affordable Housing Resident Oversight Committee"
         ),
         sessions=[
-            ingestion_models.Session(
+            Session(
                 video_uri=video_prefix + "Encoder1_AHROC_2022-03-09-07-51.mp4",
                 session_datetime=datetime(2022, 3, 9, 18),
                 session_index=0,
