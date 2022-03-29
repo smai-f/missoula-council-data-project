@@ -8,7 +8,6 @@ from datetime import date
 from datetime import datetime
 from datetime import timedelta
 from selenium import webdriver
-from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
@@ -185,7 +184,10 @@ def get_scraped_data(
 
     meetings_info[:] = [meeting for meeting in meetings_info if not "error" in meeting]
 
-    return [len(meetings_info), meetings_info]
+    if len(meetings_info) > 2000:
+        raise Exception("Something has gone wrong. Way more many meetings than expected processed.")
+
+    return meetings_info
 
 
 def get_events(
@@ -216,18 +218,22 @@ def get_events(
     """
 
     def create_ingestion_model(e):
-        EventIngestionModel(
-            body=Body(name=e.title),
+        return EventIngestionModel(
+            body=Body(name=e["title"]),
             sessions=[
                 Session(
-                    video_uri=e.video_uri,
-                    session_datetime=e.date,
+                    video_uri=e["video_uri"],
+                    session_datetime=e["date"],
                     session_index=0,
                 ),
             ],
         )
 
-    events = map(create_ingestion_model, get_scraped_data(from_dt, to_dt))
+    get_scraped_results = get_scraped_data(from_dt, to_dt)
+    events = list(map(create_ingestion_model, get_scraped_results))
+    print(get_scraped_results)
+    print(events)
+    print(len(events))
 
     hardcoded_mtg = EventIngestionModel(
         body=Body(name="Affordable Housing Resident Oversight Committee"),
