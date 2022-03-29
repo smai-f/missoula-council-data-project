@@ -12,7 +12,6 @@ from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
-from sys import platform
 from typing import List
 
 from cdp_backend.pipeline.ingestion_models import Body
@@ -20,19 +19,6 @@ from cdp_backend.pipeline.ingestion_models import EventIngestionModel
 from cdp_backend.pipeline.ingestion_models import Session
 
 ###############################################################################
-
-
-# def get_chromedriver_path():
-#     chromedriver_path = ""
-#     # Chrome Driver v99 - there is a known issue with Chrome v98 and
-#     # Selenium's is_displayed()
-#     if platform == "linux" or platform == "linux2":
-#         chromedriver_path = "./chromedriver_99_linux"
-#     elif platform == "darwin":
-#         chromedriver_path = "./chromedriver_99_osx"
-#     else:
-#         raise Exception(f"No Chrome Driver available for operating system {platform}")
-#     return chromedriver_path
 
 
 def append_meeting_data(meeting, meetings_info, from_dt, to_dt):
