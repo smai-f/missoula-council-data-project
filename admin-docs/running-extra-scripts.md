@@ -16,7 +16,7 @@ This value is incredibly useful for programmatic work but isn't _needed_ for the
 web application. As such, if you don't want to run this script, you don't need to,
 but it is easy enough to run.
 
-Open up the [Run Command](https://github.com/smai-f/missoula-council-data-project/actions/workflows/run-script.yml)
+Open up the [Run Command](https://github.com/OpenMontana/missoula-council-data-project/actions/workflows/run-script.yml)
 GitHub Action and click the "Run workflow" button.
 
 Paste in the following: `add_content_hash_to_sessions --google_credentials_file google-creds.json`

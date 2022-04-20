@@ -51,7 +51,7 @@ setup(
     python_requires=">=3.9",
     tests_require=test_requirements,
     extras_require=extra_requirements,
-    url="https://github.com/smai-f/missoula-council-data-project",
+    url="https://github.com/OpenMontana/missoula-council-data-project",
     version="1.0.0",
     zip_safe=False,
 )

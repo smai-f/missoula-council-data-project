@@ -19,7 +19,7 @@ you may want to manually trigger the event gather and processing pipeline:
 ## Backfilling and Reprocessing
 
 To backfill or rerun the pipeline for a specific datetime range go to the
-[Event Gather GitHub Action Page](https://github.com/smai-f/missoula-council-data-project/actions/workflows/event-gather-pipeline.yml).
+[Event Gather GitHub Action Page](https://github.com/OpenMontana/missoula-council-data-project/actions/workflows/event-gather-pipeline.yml).
 
 Once there, you can add the begin and end datetimes as parameters to the workflow run.
 
@@ -37,7 +37,7 @@ small enough datetime ranges that no single pipeline run lasts longer than six h
 ## Adding Custom Events
 
 To add custom or special events to the CDP infrastructure go to the
-[Process Special Event GitHub Action Page](https://github.com/smai-f/missoula-council-data-project/actions/workflows/process-special-event.yml).
+[Process Special Event GitHub Action Page](https://github.com/OpenMontana/missoula-council-data-project/actions/workflows/process-special-event.yml).
 
 Once there, you can add the full event details as a parameter to the workflow run.
 

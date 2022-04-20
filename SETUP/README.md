@@ -19,7 +19,7 @@ There are additional tasks required after generating this repository.
     [Create a new Repository](https://github.com/new) with the following parameters:
 
     -   Set the repo name to: **missoula-council-data-project**
-    -   Set the repo owner to: **smai-f**
+    -   Set the repo owner to: **OpenMontana**
     -   Set the repo visibility to: "Public"
     -   Do not initialize with any of the extra options
     -   Click "Create repository".
@@ -68,13 +68,13 @@ There are additional tasks required after generating this repository.
 1.  Attach the Pulumi Access Token and the
     Google Service Account JSON as GitHub Repository Secrets.
 
-    1. Pulumi Access Token -- Create a [new secret](https://github.com/smai-f/missoula-council-data-project/settings/secrets/actions/new)
+    1. Pulumi Access Token -- Create a [new secret](https://github.com/OpenMontana/missoula-council-data-project/settings/secrets/actions/new)
 
     -   Set the name to: **PULUMI_ACCESS_TOKEN**
     -   Set the value to: The token you kept from step #2
     -   Click "Add secret"
 
-    2. Google Service Account JSON -- Create a [new secret](https://github.com/smai-f/missoula-council-data-project/settings/secrets/actions/new)
+    2. Google Service Account JSON -- Create a [new secret](https://github.com/OpenMontana/missoula-council-data-project/settings/secrets/actions/new)
 
     -   Set the name to: **GOOGLE_CREDENTIALS**
     -   Set the value to: the contents of the file `.keys/missoula-council-data-proj.json`
@@ -96,13 +96,13 @@ There are additional tasks required after generating this repository.
     To setup a connection to our GitHub repo, run either:
 
     ```bash
-    git remote add origin https://github.com/smai-f/missoula-council-data-project.git
+    git remote add origin https://github.com/OpenMontana/missoula-council-data-project.git
     ```
 
     Or (with SSH):
 
     ```bash
-    git remote add origin git@github.com:smai-f/missoula-council-data-project.git
+    git remote add origin git@github.com:OpenMontana/missoula-council-data-project.git
     ```
 
     Finally, to push this repo to GitHub, run:
@@ -114,17 +114,17 @@ There are additional tasks required after generating this repository.
     Now refresh your repository's dashboard to ensure that all files were pushed.
 
 1.  Once the
-    ["Web App" GitHub Action Successfully Complete](https://github.com/smai-f/missoula-council-data-project/actions?query=workflow%3A%22Web+App%22)
+    ["Web App" GitHub Action Successfully Complete](https://github.com/OpenMontana/missoula-council-data-project/actions?query=workflow%3A%22Web+App%22)
     configure GitHub Pages.
 
-    Go to your repository's [GitHub Pages Configuration](https://github.com/smai-f/missoula-council-data-project/settings/pages)
+    Go to your repository's [GitHub Pages Configuration](https://github.com/OpenMontana/missoula-council-data-project/settings/pages)
 
     -   Set the source to: "gh-pages"
     -   Set the folder to: `/ (root)`
     -   Click "Save"
 
 1.  Once the
-    ["Infrastructure" GitHub Action Successfully Completes](https://github.com/smai-f/missoula-council-data-project/actions?query=workflow%3A%22Infrastructure%22)
+    ["Infrastructure" GitHub Action Successfully Completes](https://github.com/OpenMontana/missoula-council-data-project/actions?query=workflow%3A%22Infrastructure%22)
     set the CORS policy for your Storage Bucket.
 
     This step should be run while within the `SETUP` directory (`cd SETUP`)
@@ -136,7 +136,7 @@ There are additional tasks required after generating this repository.
     ```
 
 1.  Once the
-    ["Infrastructure" GitHub Action Successfully Completes](https://github.com/smai-f/missoula-council-data-project/actions?query=workflow%3A%22Infrastructure%22)
+    ["Infrastructure" GitHub Action Successfully Completes](https://github.com/OpenMontana/missoula-council-data-project/actions?query=workflow%3A%22Infrastructure%22)
     enable data-logging for the Google Speech-to-Text service.
 
     [Direct Link to Enable](https://console.cloud.google.com/apis/api/speech.googleapis.com/data_logging?project=missoula-council-data-proj)
@@ -145,7 +145,7 @@ There are additional tasks required after generating this repository.
     [Google Documentation](https://cloud.google.com/speech-to-text/docs/enable-data-logging).
 
 1.  Once the
-    ["Infrastructure" GitHub Action Successfully Completes](https://github.com/smai-f/missoula-council-data-project/actions?query=workflow%3A%22Infrastructure%22)
+    ["Infrastructure" GitHub Action Successfully Completes](https://github.com/OpenMontana/missoula-council-data-project/actions?query=workflow%3A%22Infrastructure%22)
     configure Firebase Security Rules.
 
     -   Navigate to [Firebase Console](https://console.firebase.google.com),
@@ -175,7 +175,7 @@ There are additional tasks required after generating this repository.
             ```
         -   Click "Publish"
 
-**If all steps complete successful your web application will be viewable at: https://smai-f.github.io/missoula-council-data-project**
+**If all steps complete successful your web application will be viewable at: https://OpenMontana.github.io/missoula-council-data-project**
 
 ## Data Gathering Setup
 

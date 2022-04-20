@@ -18,7 +18,7 @@ To do so, you should feel comfortable with the command line and git.
 
 1. Clone (or fetch and pull) your repository:
 
-    - `git clone https://github.com/smai-f/missoula-council-data-project.git`
+    - `git clone https://github.com/OpenMontana/missoula-council-data-project.git`
 
     OR if you have previously cloned your repository and other changes have occurred:
 

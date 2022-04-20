@@ -1,7 +1,7 @@
 {
     "name": "cdp-missoula",
     "version": "1.0.0",
-    "homepage": "https://smai-f.github.io/missoula-council-data-project",
+    "homepage": "https://OpenMontana.github.io/missoula-council-data-project",
     "license": "MIT",
     "scripts": {
         "start": "react-scripts start",

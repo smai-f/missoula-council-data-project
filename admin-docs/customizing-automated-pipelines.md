@@ -8,9 +8,9 @@ However, you may want to for example, change the interval, or the time that pipe
 run.
 
 To do so, navigate to the `.github` directory of your repository
-([GitHub link](https://github.com/smai-f/missoula-council-data-project/tree/main/.github)),
+([GitHub link](https://github.com/OpenMontana/missoula-council-data-project/tree/main/.github)),
 and then to the `workflows` sub-directory
-([GitHub link](https://github.com/smai-f/missoula-council-data-project/tree/main/.github/workflows)).
+([GitHub link](https://github.com/OpenMontana/missoula-council-data-project/tree/main/.github/workflows)).
 
 ![image of workflows sub-directory](./resources/workflows.png)
 
@@ -27,7 +27,7 @@ information on how all of these workflows are constructed.
 
 This pipeline ([including the manual trigger](./manual-event-gather.md))
 can be found under `event-gather-pipeline.yml`
-([GitHub link](https://github.com/smai-f/missoula-council-data-project/tree/main/.github/workflows/event-gather-pipeline.yml)).
+([GitHub link](https://github.com/OpenMontana/missoula-council-data-project/tree/main/.github/workflows/event-gather-pipeline.yml)).
 
 The common reasons for customizing this pipeline are:
 
@@ -63,7 +63,7 @@ to the pipeline just like the current "actions/setup-python" task.
 ## Event Indexing Pipeline
 
 This pipeline can be found under `event-index-pipeline.md`
-([GitHub link](https://github.com/smai-f/missoula-council-data-project/tree/main/.github/workflows/event-index-pipeline.yml)).
+([GitHub link](https://github.com/OpenMontana/missoula-council-data-project/tree/main/.github/workflows/event-index-pipeline.yml)).
 
 The common reasons for customizing this pipeline are:
 

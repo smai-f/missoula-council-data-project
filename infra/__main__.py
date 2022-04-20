@@ -10,8 +10,8 @@ cdp_stack = CDPStack(
     gcp_project_id="missoula-council-data-proj",
     municipality_name="Missoula",
     firestore_location="us-central",
-    hosting_github_url="https://github.com/smai-f/missoula-council-data-project",
-    hosting_web_app_address="https://smai-f.github.io/missoula-council-data-project",
+    hosting_github_url="https://github.com/OpenMontana/missoula-council-data-project",
+    hosting_web_app_address="https://OpenMontana.github.io/missoula-council-data-project",
     governing_body="city council",
 )
 
