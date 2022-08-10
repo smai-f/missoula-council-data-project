@@ -37,7 +37,7 @@ def append_meeting_data(meeting, meetings_info, from_dt, to_dt):
     try:
         video = meeting.find_element(
             by=By.XPATH,
-            value=".//li[@class='resource-link']//a[contains(@href,"
+            value=".//ul[@class='resource-list']//a[contains(@href,"
             "'/Players/ISIStandAlonePlayer.aspx?')]",
         )
     except Exception:
