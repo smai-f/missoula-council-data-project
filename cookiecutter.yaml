@@ -1,5 +1,6 @@
 default_context:
     municipality: "Missoula"
+    iana_timezone: "America/Denver"
     governing_body_type: "city council"
     municipality_slug: "missoula"
     python_municipality_slug: "missoula"
