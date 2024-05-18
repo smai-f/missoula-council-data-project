@@ -12,9 +12,7 @@ requirements = [
 ]
 
 test_requirements = [
-    "black>=19.10b0",
-    "flake8>=3.8.3",
-    "flake8-debugger>=3.2.1",
+    "ruff==0.4.4"
 ]
 
 dev_requirements = [
