@@ -7,8 +7,8 @@ from setuptools import find_packages, setup
 
 requirements = [
     "cdp-backend[pipeline]==3.2.3",
-    "selenium",
-    "webdriver_manager",
+    "selenium==4.21.0",
+    "webdriver_manager==4.0.1",
 ]
 
 test_requirements = [
