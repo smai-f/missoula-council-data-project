@@ -7,14 +7,12 @@ from setuptools import find_packages, setup
 
 requirements = [
     "cdp-backend[pipeline]==3.2.3",
-    "selenium",
-    "webdriver_manager",
+    "selenium==4.21.0",
+    "webdriver_manager==4.0.1",
 ]
 
 test_requirements = [
-    "black>=19.10b0",
-    "flake8>=3.8.3",
-    "flake8-debugger>=3.2.1",
+    "ruff==0.4.4"
 ]
 
 dev_requirements = [

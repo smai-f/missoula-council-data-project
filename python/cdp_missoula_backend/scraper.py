@@ -9,6 +9,7 @@ from datetime import datetime
 from datetime import timedelta
 from selenium import webdriver
 from webdriver_manager.chrome import ChromeDriverManager
+from selenium.webdriver.chrome.service import Service as ChromeService
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
@@ -135,7 +136,9 @@ def get_scraped_data(
     options.add_argument("--incognito")
     options.add_argument("--headless")
 
-    driver = webdriver.Chrome(ChromeDriverManager().install(), options=options)
+    driver = webdriver.Chrome(
+        service=ChromeService(ChromeDriverManager().install()), options=options
+    )
 
     msla_url = "https://pub-missoula.escribemeetings.com/"
     driver.get(msla_url)

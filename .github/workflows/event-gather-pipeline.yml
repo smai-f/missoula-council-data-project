@@ -33,7 +33,12 @@ jobs:
     - name: Install Packages
       run: |
         sudo apt update
-        sudo apt-get install ffmpeg --fix-missing
+        sudo apt -m -f install ffmpeg libu2f-udev
+
+    - name: Install Google Chrome
+      run: |
+        wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+        sudo dpkg -i google-chrome-stable_current_amd64.deb
 
     - name: Install Python Dependencies
       run: |
@@ -58,7 +63,7 @@ jobs:
       run: |
         cd python/
         run_cdp_event_gather event-gather-config.json --parallel
-    
+
     - name: Gather and Process Requested Events - Manual
       if: ${{ github.event_name == 'workflow_dispatch' }}
       run: |

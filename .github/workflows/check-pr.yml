@@ -24,12 +24,12 @@ jobs:
       run: |
         cd python/
         pip install .[test]
-    - name: Lint and Format Python
+
+    - name: Ruff Check
       run: |
         cd python/
-        flake8 cdp_missoula_backend --count --verbose --show-source --statistics
-        black --check cdp_missoula_backend
-  
+        ruff check cdp_missoula_backend
+
   build-web:
     runs-on: ubuntu-latest
 
