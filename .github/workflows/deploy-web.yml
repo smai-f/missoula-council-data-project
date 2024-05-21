@@ -1,5 +1,8 @@
 name: Web App
 
+permissions:
+  contents: write
+
 on:
   push:
     branches:
@@ -9,33 +12,33 @@ on:
     # https://pubs.opengroup.org/onlinepubs/9699919799/utilities/crontab.html#tag_20_25_07
     # Run every Monday at 23:26:00 UTC (Monday at 15:26:00 PST)
     # We offset from the hour and half hour to go easy on the servers :)
-    - cron: '26 23 * * 1'
+    - cron: "26 23 * * 1"
 
 jobs:
   deploy-web:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
-    # Setup Node
-    - name: Setup Node
-      uses: actions/setup-node@v1
-      with:
-        node-version: '16.x'
+      # Setup Node
+      - name: Setup Node
+        uses: actions/setup-node@v1
+        with:
+          node-version: "16.x"
 
-    # Build Web
-    - name: Install Web App Dependencies
-      run: |
-        cd web/
-        npm i
-    - name: Build Web App
-      run: |
-        cd web/
-        npm run build
+      # Build Web
+      - name: Install Web App Dependencies
+        run: |
+          cd web/
+          npm i
+      - name: Build Web App
+        run: |
+          cd web/
+          npm run build
 
-    # Deploy Web
-    - name: Publish Docs
-      uses: JamesIves/github-pages-deploy-action@v4
-      with:
-        folder: web/build/
+      # Deploy Web
+      - name: Publish Docs
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: web/build/

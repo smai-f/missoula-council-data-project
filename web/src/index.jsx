@@ -16,6 +16,9 @@ const config = {
         timeZone: "America/Denver",
         footerLinksSections: [],
     },
+    features: {
+        // enableClipping: true,
+    },
 }
 
 ReactDOM.render(

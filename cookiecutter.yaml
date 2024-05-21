@@ -13,3 +13,8 @@ default_context:
     firestore_region: "us-central"
     event_gather_timedelta_lookback_days: 2
     event_gather_cron: "7 9,21 * * *"
+    enable_clipping: "true"
+    speech_to_text_model_version: "medium"
+    event_gather_runner_timeout_minutes: "15"
+    event_gather_runner_max_attempts: "4"
+    event_gather_runner_retry_wait_seconds: "600"

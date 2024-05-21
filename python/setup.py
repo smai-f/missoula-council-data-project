@@ -6,7 +6,7 @@
 from setuptools import find_packages, setup
 
 requirements = [
-    "cdp-backend[pipeline]==3.2.3",
+    "cdp-backend[pipeline]==4.1.3",
     "selenium==4.21.0",
     "webdriver_manager==4.0.1",
 ]
@@ -30,13 +30,13 @@ extra_requirements = {
 }
 
 setup(
-    author="Smai Fullerton",
+    author="Smai Fullerton, Wes Hargrove",
     classifiers=[
         "Development Status :: 2 - Pre-Alpha",
         "Intended Audience :: Developers",
         "License :: OSI Approved :: MIT License",
         "Natural Language :: English",
-        "Programming Language :: Python :: 3.10",
+        "Programming Language :: Python :: 3.11",
     ],
     description="Package containing the gather functions for Example.",
     install_requires=requirements,
@@ -46,7 +46,7 @@ setup(
     keywords="civic technology, open government",
     name="cdp-missoula-backend",
     packages=find_packages(exclude=["tests", "*.tests", "*.tests.*"]),
-    python_requires=">=3.10",
+    python_requires=">=3.11",
     tests_require=test_requirements,
     extras_require=extra_requirements,
     url="https://github.com/OpenMontana/missoula-council-data-project",

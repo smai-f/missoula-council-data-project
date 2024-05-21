@@ -9,50 +9,71 @@ on:
     # https://pubs.opengroup.org/onlinepubs/9699919799/utilities/crontab.html#tag_20_25_07
     # Run every Monday at 23:26:00 UTC (Monday at 15:26:00 PST)
     # We offset from the hour and half hour to go easy on the servers :)
-    - cron: '26 23 * * 1'
+    - cron: "26 23 * * 1"
 
 jobs:
   deploy-infra:
     runs-on: ubuntu-latest
+    permissions:
+      contents: "read"
+      id-token: "write"
 
     steps:
-    - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
 
-    # Install OS Deps
-    - uses: actions/setup-python@v1
-      with:
-        python-version: '3.10'
-    - uses: extractions/setup-just@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    - name: Install firebase-cli
-      run: |
-        curl -sL https://firebase.tools | bash
+      # Install OS Deps
+      - uses: actions/setup-python@v1
+        with:
+          python-version: "3.11"
+      - uses: extractions/setup-just@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Install firebase-cli
+        run: |
+          curl -sL https://firebase.tools | bash
 
-    # Install cdp-backend
-    - name: Install Dependencies
-      run: |
-        pip install -r infra/requirements.txt
-    
-    # Setup gcloud
-    - uses: 'google-github-actions/auth@v0'
-      with:
-        credentials_json: ${{ secrets.GOOGLE_CREDENTIALS }}
-    - name: Set up Cloud SDK
-      uses: google-github-actions/setup-gcloud@v0
+      # Install cdp-backend
+      - name: Install Dependencies
+        run: |
+          pip install -r infra/requirements.txt
 
-    # Generate / copy infrastructure files
-    - name: Copy and Generate Infrastructure Files
-      run: |
-        get_cdp_infrastructure_stack infrastructure
-    
-    # Run infrastructure deploy
-    - name: Run Infrastructure Deploy
-      run: |
-        cd infrastructure
-        echo "$GOOGLE_CREDENTIALS" > google-creds.json
-        export GOOGLE_APPLICATION_CREDENTIALS=$(pwd)/google-creds.json
-        just deploy missoula-council-data-proj ../cookiecutter.yaml
-      env:
-        FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
-        GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
+      # Setup gcloud
+      - uses: "google-github-actions/auth@v2"
+        with:
+          credentials_json: ${{ secrets.GOOGLE_CREDENTIALS }}
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v0
+
+      # Generate / copy infrastructure files
+      - name: Copy and Generate Infrastructure Files
+        run: |
+          get_cdp_infrastructure_stack infrastructure
+
+      # Run infrastructure deploy
+      - name: Run Infrastructure Deploy
+        run: |
+          cd infrastructure
+          echo "$GOOGLE_CREDENTIALS" > google-creds.json
+          export GOOGLE_APPLICATION_CREDENTIALS=$(pwd)/google-creds.json
+          just deploy \
+            missoula-council-data-proj \
+            $(pwd)/../cookiecutter.yaml
+        env:
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+          GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
+
+    # Clipping Fill --
+    ## Enabled
+    # - name: Run Clipping Deploy
+    #   run: |
+    #     cd infrastructure
+    #     echo "$GOOGLE_CREDENTIALS" > google-creds.json
+    #     export GOOGLE_APPLICATION_CREDENTIALS=$(pwd)/google-creds.json
+    #     just deploy-clipping \
+    #       $(pwd)/google-creds.json \
+    #       us-central
+    #   env:
+    #     FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+    #     GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
+
+    #

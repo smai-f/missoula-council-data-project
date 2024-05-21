@@ -9,7 +9,7 @@ on:
     # Run every Thursday at 3:26:00 UTC
     # (Thursday at 19:26:00 PST)
     # We offset from the hour and half hour to go easy on the servers :)
-    - cron: '26 3 * * 4'
+    - cron: "26 3 * * 4"
 
 # We doubly fan out
 # We first generate indexs for uni, bi, and trigrams with a matrix
@@ -30,47 +30,49 @@ jobs:
       ngram-3-chunks: ${{ steps.output-index-chunks.outputs.ngram-3-chunks }}
 
     steps:
-    # Setup Runner
-    - uses: actions/checkout@v2
-    - uses: actions/setup-python@v1
-      with:
-        python-version: '3.10'
+      # Setup Runner
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v1
+        with:
+          python-version: "3.11"
 
-    # Setup GCloud / Creds
-    - name: Setup gcloud
-      uses: google-github-actions/setup-gcloud@v0
-      with:
-        project_id: missoula-council-data-proj
-        service_account_key: ${{ secrets.GOOGLE_CREDENTIALS }}
-        export_default_credentials: true
-    - name: Dump Credentials to JSON
-      run: |
-        echo "$GOOGLE_CREDS" > python/google-creds.json
-      env:
-        GOOGLE_CREDS: ${{ secrets.GOOGLE_CREDENTIALS }}
+      # Setup GCloud / Creds
+      - name: Setup gcloud
+        uses: google-github-actions/setup-gcloud@v0
+        with:
+          project_id: missoula-council-data-proj
+          service_account_key: ${{ secrets.GOOGLE_CREDENTIALS }}
+          export_default_credentials: true
 
-    # Installs
-    - name: Install Python Dependencies
-      run: |
-        cd python/
-        pip install .
+      - name: Dump Credentials to JSON
+        uses: jsdaniell/create-json@v1.2.2
+        with:
+          name: "google-creds.json"
+          json: ${{ secrets.GOOGLE_CREDENTIALS }}
+          dir: "python/"
 
-    # Index
-    - name: Index Events ${{ matrix.n-gram }}-grams
-      run: |
-        cd python/
-        run_cdp_event_index_generation event-index-config.json \
-          --n_grams ${{ matrix.n-gram }} \
-          --store_remote \
-          --parallel
+      # Installs
+      - name: Install Python Dependencies
+        run: |
+          cd python/
+          pip install .
 
-    # Store generated files to step output
-    - name: Store Index Fileset to Outputs
-      id: output-index-chunks
-      run: |
-        cd python/index/
-        output=$(python -c 'import os, json; print(json.dumps(os.listdir(".")))')
-        echo "::set-output name=ngram-${{ matrix.n-gram }}-chunks::$output"
+      # Index
+      - name: Index Events ${{ matrix.n-gram }}-grams
+        run: |
+          cd python/
+          run_cdp_event_index_generation event-index-config.json \
+            --n_grams ${{ matrix.n-gram }} \
+            --store_remote \
+            --parallel
+
+      # Store generated files to step output
+      - name: Store Index Fileset to Outputs
+        id: output-index-chunks
+        run: |
+          cd python/index/
+          output=$(python -c 'import os, json; print(json.dumps(os.listdir(".")))')
+          echo "::set-output name=ngram-${{ matrix.n-gram }}-chunks::$output"
 
   combine-matrix-ngram-chunks:
     needs: generate-index-chunks
@@ -79,59 +81,60 @@ jobs:
       all-chunks: ${{ steps.combine-index-chunks.outputs.combined-chunks }}
 
     steps:
-    # Setup Runner
-    - uses: actions/checkout@v2
-    - uses: actions/setup-python@v1
-      with:
-        python-version: '3.10'
+      # Setup Runner
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v1
+        with:
+          python-version: "3.11"
 
-    # Process
-    - name: Combine Chunks
-      id: 'combine-index-chunks'
-      run: |
-        echo 'print(${{ needs.generate-index-chunks.outputs.ngram-1-chunks }} + ${{ needs.generate-index-chunks.outputs.ngram-2-chunks }} + ${{ needs.generate-index-chunks.outputs.ngram-3-chunks }})' >> print-combined-chunks.py
-        output=$(python print-combined-chunks.py)
-        echo "::set-output name=combined-chunks::$output"
+      # Process
+      - name: Combine Chunks
+        id: "combine-index-chunks"
+        run: |
+          echo 'print(${{ needs.generate-index-chunks.outputs.ngram-1-chunks }} + ${{ needs.generate-index-chunks.outputs.ngram-2-chunks }} + ${{ needs.generate-index-chunks.outputs.ngram-3-chunks }})' >> print-combined-chunks.py
+          output=$(python print-combined-chunks.py)
+          echo "::set-output name=combined-chunks::$output"
 
   upload-index-chunks:
     needs: combine-matrix-ngram-chunks
     runs-on: ubuntu-latest
     strategy:
       max-parallel: 6
-      matrix: 
+      matrix:
         filename: ${{ fromJson(needs.combine-matrix-ngram-chunks.outputs.all-chunks) }}
       fail-fast: false
-    
+
     steps:
-    # Setup Runner
-    - uses: actions/checkout@v2
-    - uses: actions/setup-python@v1
-      with:
-        python-version: '3.10'
+      # Setup Runner
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v1
+        with:
+          python-version: "3.11"
 
-    # Setup GCloud / Creds
-    - name: Setup gcloud
-      uses: google-github-actions/setup-gcloud@v0
-      with:
-        project_id: missoula-council-data-proj
-        service_account_key: ${{ secrets.GOOGLE_CREDENTIALS }}
-        export_default_credentials: true
-    - name: Dump Credentials to JSON
-      run: |
-        echo "$GOOGLE_CREDS" > python/google-creds.json
-      env:
-        GOOGLE_CREDS: ${{ secrets.GOOGLE_CREDENTIALS }}
+      # Setup GCloud / Creds
+      - name: Setup gcloud
+        uses: google-github-actions/setup-gcloud@v0
+        with:
+          project_id: missoula-council-data-proj
+          service_account_key: ${{ secrets.GOOGLE_CREDENTIALS }}
+          export_default_credentials: true
+      - name: Dump Credentials to JSON
+        uses: jsdaniell/create-json@v1.2.2
+        with:
+          name: "google-creds.json"
+          json: ${{ secrets.GOOGLE_CREDENTIALS }}
+          dir: "python/"
 
-    # Installs
-    - name: Install Python Dependencies
-      run: |
-        cd python/
-        pip install .
-    
-    # Upload Index Chunk
-    - name: Process Upload
-      run: |
-        cd python/
-        process_cdp_event_index_chunk event-index-config.json \
-          ${{ matrix.filename }} \
-          --parallel
+      # Installs
+      - name: Install Python Dependencies
+        run: |
+          cd python/
+          pip install .
+
+      # Upload Index Chunk
+      - name: Process Upload
+        run: |
+          cd python/
+          process_cdp_event_index_chunk event-index-config.json \
+            ${{ matrix.filename }} \
+            --parallel
