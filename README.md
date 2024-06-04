@@ -1,7 +1,7 @@
 # CDP - Missoula
 
 [![Infrastructure Deployment Status](https://github.com/OpenMontana/missoula-council-data-project/workflows/Infrastructure/badge.svg)](https://github.com/OpenMontana/missoula-council-data-project/actions?query=workflow%3A%22Infrastructure%22)
-[![Event Processing Pipeline](https://github.com/OpenMontana/missoula-council-data-project/workflows/Event%20Gather/badge.svg)](https://github.com/OpenMontana/missoula-council-data-project/actions?query=workflow%3A%22Event+Gather%22)
+[![Event Gather](https://github.com/OpenMontana/missoula-council-data-project/actions/workflows/event-gather-pipeline.yml/badge.svg)](https://github.com/OpenMontana/missoula-council-data-project/actions/workflows/event-gather-pipeline.yml)
 [![Event Index Pipeline](https://github.com/OpenMontana/missoula-council-data-project/workflows/Event%20Index/badge.svg)](https://github.com/OpenMontana/missoula-council-data-project/actions?query=workflow%3A%22Event+Index%22)
 [![Web Deployment Status](https://github.com/OpenMontana/missoula-council-data-project/workflows/Web%20App/badge.svg)](https://OpenMontana.github.io/missoula-council-data-project)
 [![Repo Build Status](https://github.com/OpenMontana/missoula-council-data-project/workflows/Build%20Main/badge.svg)](https://github.com/OpenMontana/missoula-council-data-project/actions?query=workflow%3A%22Build+Main%22)
