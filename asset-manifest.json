@@ -1,20 +1,20 @@
 {
   "files": {
-    "main.js": "/missoula-council-data-project/static/js/main.ec8044ca.chunk.js",
-    "main.js.map": "/missoula-council-data-project/static/js/main.ec8044ca.chunk.js.map",
-    "runtime-main.js": "/missoula-council-data-project/static/js/runtime-main.52c8ea11.js",
-    "runtime-main.js.map": "/missoula-council-data-project/static/js/runtime-main.52c8ea11.js.map",
+    "main.js": "/missoula-council-data-project/static/js/main.5b835363.chunk.js",
+    "main.js.map": "/missoula-council-data-project/static/js/main.5b835363.chunk.js.map",
+    "runtime-main.js": "/missoula-council-data-project/static/js/runtime-main.4504d3fa.js",
+    "runtime-main.js.map": "/missoula-council-data-project/static/js/runtime-main.4504d3fa.js.map",
     "static/css/2.bd5b6b7e.chunk.css": "/missoula-council-data-project/static/css/2.bd5b6b7e.chunk.css",
-    "static/js/2.6766712c.chunk.js": "/missoula-council-data-project/static/js/2.6766712c.chunk.js",
-    "static/js/2.6766712c.chunk.js.map": "/missoula-council-data-project/static/js/2.6766712c.chunk.js.map",
+    "static/js/2.36560b55.chunk.js": "/missoula-council-data-project/static/js/2.36560b55.chunk.js",
+    "static/js/2.36560b55.chunk.js.map": "/missoula-council-data-project/static/js/2.36560b55.chunk.js.map",
     "index.html": "/missoula-council-data-project/index.html",
     "static/css/2.bd5b6b7e.chunk.css.map": "/missoula-council-data-project/static/css/2.bd5b6b7e.chunk.css.map",
-    "static/js/2.6766712c.chunk.js.LICENSE.txt": "/missoula-council-data-project/static/js/2.6766712c.chunk.js.LICENSE.txt"
+    "static/js/2.36560b55.chunk.js.LICENSE.txt": "/missoula-council-data-project/static/js/2.36560b55.chunk.js.LICENSE.txt"
   },
   "entrypoints": [
-    "static/js/runtime-main.52c8ea11.js",
+    "static/js/runtime-main.4504d3fa.js",
     "static/css/2.bd5b6b7e.chunk.css",
-    "static/js/2.6766712c.chunk.js",
-    "static/js/main.ec8044ca.chunk.js"
+    "static/js/2.36560b55.chunk.js",
+    "static/js/main.5b835363.chunk.js"
   ]
 }
