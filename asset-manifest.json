@@ -1,20 +1,20 @@
 {
   "files": {
-    "main.js": "/missoula-council-data-project/static/js/main.5be0dcd3.chunk.js",
-    "main.js.map": "/missoula-council-data-project/static/js/main.5be0dcd3.chunk.js.map",
+    "main.js": "/missoula-council-data-project/static/js/main.68d63ddd.chunk.js",
+    "main.js.map": "/missoula-council-data-project/static/js/main.68d63ddd.chunk.js.map",
     "runtime-main.js": "/missoula-council-data-project/static/js/runtime-main.3e17140c.js",
     "runtime-main.js.map": "/missoula-council-data-project/static/js/runtime-main.3e17140c.js.map",
-    "static/css/2.bd5b6b7e.chunk.css": "/missoula-council-data-project/static/css/2.bd5b6b7e.chunk.css",
-    "static/js/2.dfb598c3.chunk.js": "/missoula-council-data-project/static/js/2.dfb598c3.chunk.js",
-    "static/js/2.dfb598c3.chunk.js.map": "/missoula-council-data-project/static/js/2.dfb598c3.chunk.js.map",
+    "static/css/2.eb012a82.chunk.css": "/missoula-council-data-project/static/css/2.eb012a82.chunk.css",
+    "static/js/2.d6513565.chunk.js": "/missoula-council-data-project/static/js/2.d6513565.chunk.js",
+    "static/js/2.d6513565.chunk.js.map": "/missoula-council-data-project/static/js/2.d6513565.chunk.js.map",
     "index.html": "/missoula-council-data-project/index.html",
-    "static/css/2.bd5b6b7e.chunk.css.map": "/missoula-council-data-project/static/css/2.bd5b6b7e.chunk.css.map",
-    "static/js/2.dfb598c3.chunk.js.LICENSE.txt": "/missoula-council-data-project/static/js/2.dfb598c3.chunk.js.LICENSE.txt"
+    "static/css/2.eb012a82.chunk.css.map": "/missoula-council-data-project/static/css/2.eb012a82.chunk.css.map",
+    "static/js/2.d6513565.chunk.js.LICENSE.txt": "/missoula-council-data-project/static/js/2.d6513565.chunk.js.LICENSE.txt"
   },
   "entrypoints": [
     "static/js/runtime-main.3e17140c.js",
-    "static/css/2.bd5b6b7e.chunk.css",
-    "static/js/2.dfb598c3.chunk.js",
-    "static/js/main.5be0dcd3.chunk.js"
+    "static/css/2.eb012a82.chunk.css",
+    "static/js/2.d6513565.chunk.js",
+    "static/js/main.68d63ddd.chunk.js"
   ]
 }
